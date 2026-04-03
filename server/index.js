@@ -16,8 +16,7 @@ const { fallbackKuyruguIsle } = require("./utils/notify");
 const { supabaseAdmin } = require("./supabase");
 
 const app = express();
-/** Next ile birlikte çalışırken Hostinger’ın verdiği PORT Next’e ayrılır; API için API_PORT (varsayılan 4000). */
-const port = Number(process.env.API_PORT || process.env.PORT || 4000);
+const port = Number(process.env.PORT || 4000);
 const host = process.env.HOST || "0.0.0.0";
 const productionModu = process.env.NODE_ENV === "production";
 
