@@ -8,5 +8,16 @@
     "start": "next start",
     "lint": "next lint"
   },
-  "dependencies": {"next": "latest", "react": "latest", "react-dom": "latest"}
+  "dependencies": {
+    "@supabase/supabase-js": "^2.101.1",
+    "jspdf": "^4.2.1",
+    "lucide-react": "^1.7.0",
+    "next": "latest",
+    "qrcode": "^1.5.4",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "typescript": "6.0.2"
+  }
 }
