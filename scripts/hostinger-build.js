@@ -76,6 +76,35 @@ function webBagimlilikKur(webDir) {
   }
 }
 
+/**
+ * Hostinger bazi kurulumlarda NEXT_PUBLIC_* degiskenlerini `npm run build` alt surecine
+ * tam aktarmiyor; Next ise bunlari build aninda gomer. .env.production.local kesin okunur.
+ */
+function webEnvProductionLocalYaz(webDir) {
+  const api = String(process.env.NEXT_PUBLIC_API_BASE_URL || "").trim().toLowerCase();
+  if (api && (api.includes("durapet.com.tr") || api.includes("www.durapet.com.tr"))) {
+    console.warn(
+      "[hostinger-build] UYARI: NEXT_PUBLIC_API_BASE_URL panel alan adina benziyor. REST API kokunu kullanin: https://durapet.site (panel degil)."
+    );
+  }
+  const satirlar = [];
+  for (const [anahtar, ham] of Object.entries(process.env)) {
+    if (!anahtar.startsWith("NEXT_PUBLIC_") || ham === undefined) continue;
+    const deger = String(ham);
+    if (!deger.trim()) continue;
+    const ka = deger.replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/"/g, '\\"');
+    satirlar.push(`${anahtar}="${ka}"`);
+  }
+  if (satirlar.length === 0) return;
+  const hedef = path.join(webDir, ".env.production.local");
+  fs.writeFileSync(hedef, `${satirlar.join("\n")}\n`, "utf8");
+  console.log(
+    `[hostinger-build] web/.env.production.local yazildi (${satirlar.length} NEXT_PUBLIC_* satiri) — next build bunlari okuyacak.`
+  );
+  const ozet = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
+  if (ozet) console.log("[hostinger-build] NEXT_PUBLIC_API_BASE_URL =>", ozet);
+}
+
 function webNextDerle(webDir) {
   const sonuc = spawnSync("npm", ["run", "build"], {
     cwd: webDir,
@@ -102,6 +131,7 @@ if (target === "web") {
   webBuildEnvKontrol();
   webNodeSurumKontrol();
   webBagimlilikKur(webDir);
+  webEnvProductionLocalYaz(webDir);
   webNextDerle(webDir);
 } else {
   fs.accessSync(path.join(root, "server", "index.js"));
