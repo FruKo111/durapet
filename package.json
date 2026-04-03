@@ -12,7 +12,7 @@
     "@supabase/supabase-js": "^2.101.1",
     "jspdf": "^4.2.1",
     "lucide-react": "^1.7.0",
-    "next": "latest",
+    "next": "^16.2.2",
     "qrcode": "^1.5.4",
     "react": "latest",
     "react-dom": "latest"
