@@ -3,23 +3,35 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently -n api,web -c blue,green \"cross-env API_PORT=4000 node server/index.js\" \"next dev\"",
+    "dev:api": "cross-env API_PORT=4000 node server/index.js",
+    "dev:web": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "concurrently -n api,web -c blue,green \"cross-env API_PORT=4000 node server/index.js\" \"next start\"",
     "lint": "next lint"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.101.1",
+    "compression": "^1.8.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^13.0.2",
+    "helmet": "^8.0.0",
     "jspdf": "^4.2.1",
     "lucide-react": "^1.7.0",
     "next": "^16.2.2",
     "qrcode": "^1.5.4",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/qrcode": "^1.5.6",
     "@types/react": "19.2.14",
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
     "typescript": "~5.9.3"
   }
 }

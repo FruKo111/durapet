@@ -1,54 +1,68 @@
 ================================================================================
-HOSTİNGER — Ortam değişkenleri (Next.js panel: durapet.com.tr)
+PLAN B — Aynı domain (durapet.com.tr): Panel + API tek adreste
 ================================================================================
-Panelde: Web uygulaması / Dağıtım → Ortam değişkenleri (Environment variables)
-Her satır = bir değişken. Kaydettikten sonra mutlaka YENİDEN DEPLOY / BUILD al.
+Tarayıcı hep https://durapet.com.tr/api/v1/... çağırır (veya NEXT_PUBLIC_API_BASE_URL
+boşsa göreli /api/...). Next.js sunucusu /api/* isteklerini arka planda Express'e
+iletir (next.config.ts rewrites).
 
-Aşağıdaki BOŞLUKLARI doldur. Sonunda / kullanma.
-
---------------------------------------------------------------------------------
-ZORUNLU
---------------------------------------------------------------------------------
-
-NEXT_PUBLIC_API_BASE_URL
-  → Node API’nin internetten açık HTTPS adresi.
-  → Örnek: https://api.durapet.com.tr
-  → API henüz yoksa önce API’yi bir sunucuda yayınla; panel tek başına çalışmaz.
-
-NEXT_PUBLIC_SUPABASE_URL
-  → Supabase Dashboard → Project Settings → API → Project URL
-  → Örnek: https://xxxx.supabase.co
-
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
-  → Supabase → API → "publishable" / "anon" public key (sb_publishable_... veya eyJ... ile başlayan anon JWT)
-  → Service role key ASLA koyma (sadece sunucuda kalır).
+ŞARTLAR:
+  • Hostinger'da Next "Node" modunda çalışmalı (next start). Saf statik
+    hosting (sadece HTML/CSS export) ile rewrites ÇALIŞMAZ.
+  • Express API aynı sunucuda sürekli açık olmalı (örn. port 4000, 127.0.0.1).
 
 --------------------------------------------------------------------------------
-ÖNERİLEN (QR ve kimlik linkleri için)
+1) Ortam değişkenleri (Hostinger — build ÖNCESİ de aynı olsun)
 --------------------------------------------------------------------------------
 
-NEXT_PUBLIC_SITE_URL
-  → Canlı panel adresin, örn: https://durapet.com.tr
-  → www kullanıyorsan: https://www.durapet.com.tr
+NEXT_PUBLIC_API_BASE_URL=
+  → Boş: tarayıcı aynı origin üzerinden /api/... çağırır (önerilen tek Node kurulumu).
+  → Dolu örnek: https://durapet.com.tr (sonunda / yok; www kullanıyorsan onu yaz.)
 
-NEXT_PUBLIC_QR_PUBLIC_BASE_URL
-  → Genelde SITE_URL ile aynı (QR’da açılacak site kökü).
+API_PROXY_TARGET=http://127.0.0.1:4000
+  → Next'in Express'e bağlanacağı iç adres. Sunucuda API farklı porttaysa onu yaz.
+  → Bu değişken NEXT_PUBLIC değil; tarayıcıya gitmez.
+  → ÖNEMLİ: npm run build sırasında da tanımlı olmalı (rewrites build'de sabitlenir).
+
+(ALTERNATİF İSİM) INTERNAL_API_URL=http://127.0.0.1:4000
+  → API_PROXY_TARGET ile aynı iş; ikisinden biri yeter.
+
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=...
+
+NEXT_PUBLIC_SITE_URL=https://durapet.com.tr
+NEXT_PUBLIC_QR_PUBLIC_BASE_URL=https://durapet.com.tr
+  → LAN IP bırakma; canlı site adresi olsun.
 
 --------------------------------------------------------------------------------
-OPSİYONEL
+2) Tek Node uygulaması (önerilen)
 --------------------------------------------------------------------------------
+Giriş komutu: npm run start
+  → concurrently ile API (API_PORT=4000, server/index.js) + next start birlikte açılır.
+  → Hostinger'ın verdiği PORT yalnızca Next'e gider; Express iç port 4000'de kalır.
 
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-  → Sadece panelde harita önizlemesi kullanıyorsan (Maps Embed API + referrer kısıtı).
+Ortam örnekleri:
+  API_PROXY_TARGET=http://127.0.0.1:4000
+  CORS_ORIGINS=https://durapet.com.tr
+  (diğer .env: SUPABASE_SERVICE_ROLE_KEY, vb.)
+
+API iç adres: http://127.0.0.1:4000 — dışarıdan açılması şart değil; Next proxy kullanır.
+
+--------------------------------------------------------------------------------
+3) Yeniden deploy
+--------------------------------------------------------------------------------
+Env'leri kaydet → yeni BUILD → next start ile panel ayağa kalksın.
+
+--------------------------------------------------------------------------------
+4) Kontrol
+--------------------------------------------------------------------------------
+Sunucuda veya curl ile:
+  curl -sI "https://durapet.com.tr/api/v1/durum"
+JSON veya 200 beklenir; HTML 404 dönmemeli.
 
 ================================================================================
-BANA ŞUNLARI YAZ (mesajda kopyala-yapıştır); ben sana Hostinger’a tek tek
-yapıştıracağın listeyi düzenlenmiş halde dönerim (sırları GitHub’a koymayız):
+PLAN A hatırlatma — API ayrı subdomain ise
 ================================================================================
-
-1) API tam adresi (HTTPS): 
-2) Supabase Project URL: 
-3) Supabase anon veya publishable key (public olan): 
-4) Site adresin (tarayıcıda açtığın, www var mı?): 
+NEXT_PUBLIC_API_BASE_URL=https://api.durapet.com.tr
+API_PROXY_TARGET kullanma (boş bırak); rewrites devreye girmez.
 
 ================================================================================

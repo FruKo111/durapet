@@ -11,7 +11,10 @@ function prodMu(): boolean {
   return process.env.NODE_ENV === "production";
 }
 
-/** DuraPet REST API kökü (path yok, son / yok). Aynı domainde API (reverse proxy) ise https://durapet.com.tr gibi olabilir. */
+/**
+ * DuraPet REST API kökü (path yok, son / yok).
+ * Boş string: aynı origin — istekler /api/v1/... olarak Next proxy üzerinden Express'e gider.
+ */
 export function publicApiBaseUrl(): string {
   const raw = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
   const siteFallback = process.env.NEXT_PUBLIC_SITE_URL?.trim();
@@ -30,10 +33,12 @@ export function publicApiBaseUrl(): string {
     return url;
   }
 
-  if (!prodMu()) return "http://localhost:4000";
-
   if (typeof window !== "undefined") {
-    return sonSlashKaldir(window.location.origin);
+    return "";
+  }
+
+  if (!prodMu()) {
+    return `http://127.0.0.1:${process.env.PORT || "3000"}`;
   }
 
   if (siteFallback) {
@@ -41,23 +46,22 @@ export function publicApiBaseUrl(): string {
   }
 
   throw new Error(
-    "Üretimde API adresi gerekli: Hostinger Ortam Değişkenleri’ne NEXT_PUBLIC_API_BASE_URL=https://durapet.com.tr ekleyin (API bu domainde /api/v1 ile servis ediliyorsa). Farklı API sunucun varsa onun HTTPS kökünü yaz. Sonra yeniden deploy. Sunucu tarafı derleme için alternatif: NEXT_PUBLIC_SITE_URL."
+    "Üretimde sunucu tarafı API adresi: NEXT_PUBLIC_SITE_URL veya NEXT_PUBLIC_API_BASE_URL tanımlayın (aynı domain + proxy için site kökü yeterli)."
   );
 }
 
 /**
- * Env yoksa yalnızca geliştirmede window.hostname:4000 kullanır (LAN test).
- * Üretimde publicApiBaseUrl ile aynı kurallar.
+ * Env yoksa aynı origin (Next proxy); geliştirmede sunucu tarafı için 127.0.0.1:PORT.
  */
 export function publicApiBaseUrlVeyaDevOtomatik(): string {
   if (process.env.NEXT_PUBLIC_API_BASE_URL?.trim()) {
     return publicApiBaseUrl();
   }
-  if (!prodMu() && typeof window !== "undefined") {
-    return `${window.location.protocol}//${window.location.hostname}:4000`;
+  if (typeof window !== "undefined") {
+    return "";
   }
-  if (prodMu() && typeof window !== "undefined") {
-    return sonSlashKaldir(window.location.origin);
+  if (!prodMu()) {
+    return `http://127.0.0.1:${process.env.PORT || "3000"}`;
   }
   return publicApiBaseUrl();
 }
@@ -81,7 +85,7 @@ export function publicWebOriginForQr(): string {
 /** Ağ hatası kullanıcı mesajı — geliştirmede port ipucu, üretimde genel metin. */
 export function apiBaglantiHataMetni(): string {
   if (!prodMu()) {
-    return "Sunucuya ulaşılamıyor. API’nin çalıştığından emin olun (geliştirme: genelde http://localhost:4000).";
+    return "Sunucuya ulaşılamıyor. Geliştirmede `npm run dev` ile hem Next hem API’nin (ör. 4000) çalıştığından emin olun.";
   }
   return "Sunucuya şu an ulaşılamıyor. Lütfen bir süre sonra tekrar deneyin.";
 }
