@@ -4,6 +4,7 @@
   "description": "",
   "main": "server/index.js",
   "scripts": {
+    "build": "node -e \"require('fs').accessSync('server/index.js'); console.log('DuraPet API: derleme yok, server/index.js mevcut.')\"",
     "dev": "npm run dev:clean",
     "dev:clean": "sh -c 'PIDS=$(lsof -ti:4000); if [ -n \"$PIDS\" ]; then kill -9 $PIDS; fi; node server/index.js'",
     "start": "node server/index.js",
@@ -17,6 +18,9 @@
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "@supabase/supabase-js": "^2.99.1",
     "compression": "^1.8.1",
