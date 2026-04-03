@@ -24,7 +24,8 @@ npm start
 Aynı repoda iki site: **API** ve **panel** kökten `npm run build` / `npm start` kullanır.
 
 - **API (`durapet.site`):** ekstra env gerekmez.
-- **Panel (`durapet.com.tr`):** ortam değişkeni **`DURAPET_BUILD=web`** ver. Çıktı dizini: **`web/.next`**. Ayrıca `NEXT_PUBLIC_*` ve `NEXT_PUBLIC_API_BASE_URL`.
+- **Panel (`durapet.com.tr`):** ortam değişkeni **`DURAPET_BUILD=web`** ver (alternatif: **`BUILD_TARGET=web`** veya **`HB_PANEL=web`**). Çıktı dizini: **`web/.next`**. Ayrıca `NEXT_PUBLIC_*` ve `NEXT_PUBLIC_API_BASE_URL`.
+- Derlemede **`DuraPet API: derleme yok...`** görüp **`No output directory found after build`** alıyorsan: bu değişken **build aşamasında** tanımlı değil — hPanel’de kaydedip **yeniden dağıt**; bazen değişken sadece “çalışma zamanı”na eklenmiş olur.
 
 Yerel kökten panel derlemek: `DURAPET_BUILD=web npm run build`
 

@@ -6,9 +6,16 @@
 const { execSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
+const { resolveTarget, rawTargetEnv } = require("./hostinger-target");
 
 const root = path.join(__dirname, "..");
-const target = (process.env.DURAPET_BUILD || "api").toLowerCase();
+const target = resolveTarget();
+const raw = rawTargetEnv();
+console.log(
+  "[hostinger-build] hedef=%s (DURAPET_BUILD/BUILD_TARGET/HB_PANEL=%s)",
+  target,
+  raw === "" ? "bos -> api" : JSON.stringify(String(raw).trim())
+);
 
 if (target === "web") {
   const webDir = path.join(root, "web");
@@ -25,4 +32,7 @@ if (target === "web") {
 } else {
   fs.accessSync(path.join(root, "server", "index.js"));
   console.log("DuraPet API: derleme yok, server/index.js mevcut.");
+  console.log(
+    "[hostinger-build] UYARI: Next.js panel dağıtımıysa Hostinger'da ortam degiskeni ekleyin: DURAPET_BUILD=web (veya BUILD_TARGET=web). Aksi halde .next olusmaz."
+  );
 }

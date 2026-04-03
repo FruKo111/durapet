@@ -4,9 +4,11 @@
 const { execSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
+const { resolveTarget } = require("./hostinger-target");
 
 const root = path.join(__dirname, "..");
-const target = (process.env.DURAPET_BUILD || "api").toLowerCase();
+const target = resolveTarget();
+console.log("[hostinger-start] hedef=%s", target);
 
 if (target === "web") {
   const webDir = path.join(root, "web");
