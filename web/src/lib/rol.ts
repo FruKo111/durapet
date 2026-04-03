@@ -5,9 +5,11 @@ export const ROLLER = {
 } as const;
 
 export function rolYolu(rolId: number): string {
-  if (rolId === ROLLER.ADMIN) return "/admin";
-  if (rolId === ROLLER.VETERINER) return "/veteriner";
-  if (rolId === ROLLER.HAYVAN_SAHIBI) return "/sahip";
+  const id = Number(rolId);
+  if (!Number.isFinite(id)) return "/giris";
+  if (id === ROLLER.ADMIN) return "/admin";
+  if (id === ROLLER.VETERINER) return "/veteriner";
+  if (id === ROLLER.HAYVAN_SAHIBI) return "/sahip";
   return "/giris";
 }
 
