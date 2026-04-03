@@ -48,7 +48,7 @@ app.use(
   })
 );
 const izinliOriginler = (process.env.CORS_ORIGINS || "")
-  .split(",")
+  .split(/[;,]/)
   .map((x) => x.trim())
   .filter(Boolean);
 
