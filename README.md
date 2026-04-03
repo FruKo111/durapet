@@ -24,7 +24,8 @@ npm start
 Aynı repoda iki site: **API** ve **panel** kökten `npm run build` / `npm start` kullanır.
 
 - **API (`durapet.site`):** ekstra env gerekmez.
-- **Panel (`durapet.com.tr`):** ortam değişkeni **`DURAPET_BUILD=web`** (veya **`BUILD_TARGET=web`** / **`HB_PANEL=web`**). Çıktı dizini: **`web/.next`**.
+- **Panel (`durapet.com.tr`):** **Node.js 20.x veya 22.x** (Next.js 16, **18.x ile derleme başarısız**). Ortam: **`DURAPET_BUILD=web`** (veya **`BUILD_TARGET=web`** / **`HB_PANEL=web`**). Çıktı dizini: **`web/.next`**.
+- **`.env.local` GitHub’da yok** (`.gitignore`); Hostinger’a değişkenleri **hPanel → Ortam değişkenleri** ile tek tek gir — dosya yüklemen deployment’ta otomatik okunmaz.
 - **Next derlemesi** sırasında da (sadece runtime değil) şu **`NEXT_PUBLIC_*`** değişkenleri tanımlı olmalı; yoksa `npm run build` patlar:
   - **`NEXT_PUBLIC_API_BASE_URL`** → `https://durapet.site`
   - **`NEXT_PUBLIC_SUPABASE_URL`**

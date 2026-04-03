@@ -13,6 +13,9 @@
   "author": "",
   "license": "ISC",
   "private": true,
+  "engines": {
+    "node": ">=20.9.0"
+  },
   "dependencies": {
     "@supabase/supabase-js": "^2.99.1",
     "jspdf": "^4.2.0",

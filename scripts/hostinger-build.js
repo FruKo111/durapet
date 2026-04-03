@@ -3,7 +3,7 @@
  * Panel (durapet.com.tr): ortamda DURAPET_BUILD=web tanımla.
  * API (durapet.site): değişken yok (varsayılan api).
  */
-const { execSync } = require("child_process");
+const { execSync, spawnSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 const { resolveTarget, rawTargetEnv } = require("./hostinger-target");
@@ -51,12 +51,44 @@ function webBuildEnvKontrol() {
   }
 }
 
+function webNodeSurumKontrol() {
+  const m = /^v(\d+)\.(\d+)/.exec(process.version);
+  const major = m ? parseInt(m[1], 10) : 0;
+  const minor = m ? parseInt(m[2], 10) : 0;
+  const ok = major > 20 || (major === 20 && minor >= 9);
+  if (!ok) {
+    console.error(
+      `[hostinger-build] Next.js 16 icin Node.js >= 20.9.0 gerekli. Su an: ${process.version}.`
+    );
+    console.error(
+      "[hostinger-build] Hostinger → durapet.com.tr → Ayarlar → Düğüm sürümü: 20.x veya 22.x secin, kaydedip yeniden dagitin."
+    );
+    process.exit(1);
+  }
+}
+
 function webBagimlilikKur(webDir) {
   try {
     execSync("npm ci", { cwd: webDir, stdio: "inherit", env: process.env });
   } catch {
     console.warn("[hostinger-build] npm ci basarisiz; npm install deneniyor...");
     execSync("npm install", { cwd: webDir, stdio: "inherit", env: process.env });
+  }
+}
+
+function webNextDerle(webDir) {
+  const sonuc = spawnSync("npm", ["run", "build"], {
+    cwd: webDir,
+    env: process.env,
+    encoding: "utf8",
+    maxBuffer: 50 * 1024 * 1024,
+  });
+  if (sonuc.stdout) process.stdout.write(sonuc.stdout);
+  if (sonuc.stderr) process.stderr.write(sonuc.stderr);
+  if (sonuc.status !== 0) {
+    console.error("[hostinger-build] npm run build cikis kodu:", sonuc.status ?? 1);
+    if (sonuc.error) console.error("[hostinger-build]", sonuc.error);
+    process.exit(sonuc.status ?? 1);
   }
 }
 
@@ -68,12 +100,9 @@ if (target === "web") {
     process.exit(1);
   }
   webBuildEnvKontrol();
+  webNodeSurumKontrol();
   webBagimlilikKur(webDir);
-  execSync("npm run build", {
-    cwd: webDir,
-    stdio: "inherit",
-    env: process.env,
-  });
+  webNextDerle(webDir);
 } else {
   fs.accessSync(path.join(root, "server", "index.js"));
   console.log("DuraPet API: derleme yok, server/index.js mevcut.");
