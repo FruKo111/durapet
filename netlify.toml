@@ -1,0 +1,7 @@
+# Kök dizin ./ kalsa bile build web/ içinde çalışır (@netlify/plugin-nextjs çıktıyı yönetir).
+[build]
+  base = "web"
+  command = "npm run build"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

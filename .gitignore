@@ -1,0 +1,10 @@
+.env
+.env.*
+!.env.example
+
+# Firebase Admin SDK (asla commit etme)
+.secrets/
+
+node_modules/
+.next/
+.env*
