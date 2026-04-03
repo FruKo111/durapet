@@ -27,7 +27,7 @@ Aynı repoda iki site: **API** ve **panel** kökten `npm run build` / `npm start
 - **Panel (`durapet.com.tr`):** **Node.js 20.x veya 22.x** (Next.js 16, **18.x ile derleme başarısız**). Ortam: **`DURAPET_BUILD=web`** (veya **`BUILD_TARGET=web`** / **`HB_PANEL=web`**). Çıktı dizini: **`web/.next`**.
 - **`.env.local` GitHub’da yok** (`.gitignore`); Hostinger’a değişkenleri **hPanel → Ortam değişkenleri** ile tek tek gir — dosya yüklemen deployment’ta otomatik okunmaz.
 - **Next derlemesi** sırasında da (sadece runtime değil) şu **`NEXT_PUBLIC_*`** değişkenleri tanımlı olmalı; yoksa `npm run build` patlar:
-  - **`NEXT_PUBLIC_API_BASE_URL`** → `https://durapet.site`
+  - **`NEXT_PUBLIC_API_BASE_URL`** → yalnızca API kökü: `https://durapet.site` (panel `durapet.com.tr` **yazma**). Bu değişince **mutlaka yeniden derle + dağıt** (Next değeri build anında gömer).
   - **`NEXT_PUBLIC_SUPABASE_URL`**
   - **`NEXT_PUBLIC_SUPABASE_ANON_KEY`** (veya **`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY`**)
   - **`NEXT_PUBLIC_SITE_URL`** → `https://durapet.com.tr` (veya **`NEXT_PUBLIC_QR_PUBLIC_BASE_URL`** aynı kök)
