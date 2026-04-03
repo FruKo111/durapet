@@ -10,3 +10,4 @@ node_modules/
 .env*
 Arşiv.zip
 *.zip
+*.tsbuildinfo
