@@ -1,17 +1,24 @@
-# DuraPet Web Panel
+# DuraPet
 
-## Kurulum
+Monorepo: **Express API** (kök) + **Next.js panel** (`web/`).
 
-1. `.env.example` dosyasini `.env.local` olarak kopyala.
-2. Supabase ve API degiskenlerini doldur.
-3. Calistir:
+## API (kök)
 
 ```bash
-npm install
-npm run dev
+npm ci
+npm run build   # Hostinger uyumlu doğrulama
+npm start       # server/index.js
 ```
 
-Panel:
+## Web panel
 
-- `http://localhost:3000/giris`
+```bash
+cd web
+npm ci
+npm run build
+npm start
+```
 
+Yerel geliştirme: kökte `.env.local`, `web/` içinde ayrı `.env.local` — `.env.example` dosyalarına bak.
+
+Panel: `http://localhost:3000/giris`
