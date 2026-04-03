@@ -11,26 +11,38 @@ function prodMu(): boolean {
   return process.env.NODE_ENV === "production";
 }
 
-/** DuraPet REST API kökü (örn. https://api.site.com — path yok, son / yok). */
+/** DuraPet REST API kökü (path yok, son / yok). Aynı domainde API (reverse proxy) ise https://durapet.com.tr gibi olabilir. */
 export function publicApiBaseUrl(): string {
   const raw = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
-  if (!raw) {
-    if (!prodMu()) return "http://localhost:4000";
-    throw new Error(
-      "[DuraPet] Üretimde NEXT_PUBLIC_API_BASE_URL zorunlu (örn. https://api.alanadin.com)."
-    );
+  const siteFallback = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+
+  if (raw) {
+    const url = sonSlashKaldir(raw);
+    const lower = url.toLowerCase();
+    if (prodMu() && (lower.includes("localhost") || lower.includes("127.0.0.1"))) {
+      throw new Error(
+        "[DuraPet] Üretimde NEXT_PUBLIC_API_BASE_URL localhost olamaz; gerçek HTTPS adresini kullanın."
+      );
+    }
+    if (prodMu() && !lower.startsWith("https://")) {
+      console.warn("[DuraPet] Üretimde API için https:// önerilir:", url);
+    }
+    return url;
   }
-  const url = sonSlashKaldir(raw);
-  const lower = url.toLowerCase();
-  if (prodMu() && (lower.includes("localhost") || lower.includes("127.0.0.1"))) {
-    throw new Error(
-      "[DuraPet] Üretimde NEXT_PUBLIC_API_BASE_URL localhost olamaz; gerçek API adresini kullanın."
-    );
+
+  if (!prodMu()) return "http://localhost:4000";
+
+  if (typeof window !== "undefined") {
+    return sonSlashKaldir(window.location.origin);
   }
-  if (prodMu() && !lower.startsWith("https://")) {
-    console.warn("[DuraPet] Üretimde API için https:// önerilir:", url);
+
+  if (siteFallback) {
+    return sonSlashKaldir(siteFallback);
   }
-  return url;
+
+  throw new Error(
+    "Üretimde API adresi gerekli: Hostinger Ortam Değişkenleri’ne NEXT_PUBLIC_API_BASE_URL=https://durapet.com.tr ekleyin (API bu domainde /api/v1 ile servis ediliyorsa). Farklı API sunucun varsa onun HTTPS kökünü yaz. Sonra yeniden deploy. Sunucu tarafı derleme için alternatif: NEXT_PUBLIC_SITE_URL."
+  );
 }
 
 /**
@@ -43,6 +55,9 @@ export function publicApiBaseUrlVeyaDevOtomatik(): string {
   }
   if (!prodMu() && typeof window !== "undefined") {
     return `${window.location.protocol}//${window.location.hostname}:4000`;
+  }
+  if (prodMu() && typeof window !== "undefined") {
+    return sonSlashKaldir(window.location.origin);
   }
   return publicApiBaseUrl();
 }
