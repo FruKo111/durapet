@@ -4,10 +4,10 @@
   "description": "",
   "main": "server/index.js",
   "scripts": {
-    "build": "node -e \"require('fs').accessSync('server/index.js'); console.log('DuraPet API: derleme yok, server/index.js mevcut.')\"",
+    "build": "node scripts/hostinger-build.js",
     "dev": "npm run dev:clean",
     "dev:clean": "sh -c 'PIDS=$(lsof -ti:4000); if [ -n \"$PIDS\" ]; then kill -9 $PIDS; fi; node server/index.js'",
-    "start": "node server/index.js",
+    "start": "node scripts/hostinger-start.js",
     "seed:test-users": "node scripts/seed-test-users.js",
     "test:api-smoke": "node scripts/api-smoke.js",
     "test:api-smoke:rate": "node scripts/api-smoke.js --rate-limit",

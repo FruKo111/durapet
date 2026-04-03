@@ -19,6 +19,15 @@ npm run build
 npm start
 ```
 
+### Hostinger (kök `./` kilitliyse)
+
+Aynı repoda iki site: **API** ve **panel** kökten `npm run build` / `npm start` kullanır.
+
+- **API (`durapet.site`):** ekstra env gerekmez.
+- **Panel (`durapet.com.tr`):** ortam değişkeni **`DURAPET_BUILD=web`** ver. Çıktı dizini: **`web/.next`**. Ayrıca `NEXT_PUBLIC_*` ve `NEXT_PUBLIC_API_BASE_URL`.
+
+Yerel kökten panel derlemek: `DURAPET_BUILD=web npm run build`
+
 Yerel geliştirme: kökte `.env.local`, `web/` içinde ayrı `.env.local` — `.env.example` dosyalarına bak.
 
 Panel: `http://localhost:3000/giris`
