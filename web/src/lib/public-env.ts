@@ -7,6 +7,27 @@ function sonSlashKaldir(url: string): string {
   return url.replace(/\/+$/, "");
 }
 
+/**
+ * NEXT_PUBLIC_API_BASE_URL bazen yanlislikla .../api veya .../api/v1 ile giriliyor;
+ * kod zaten `/api/v1/profilim` ekliyor — cift path 404 verir.
+ */
+function apiKokuNormalize(ham: string): string {
+  let u = sonSlashKaldir(ham);
+  for (let i = 0; i < 3; i++) {
+    const lower = u.toLowerCase();
+    if (lower.endsWith("/api/v1")) {
+      u = sonSlashKaldir(u.slice(0, -"/api/v1".length));
+      continue;
+    }
+    if (lower.endsWith("/api")) {
+      u = sonSlashKaldir(u.slice(0, -"/api".length));
+      continue;
+    }
+    break;
+  }
+  return u;
+}
+
 function prodMu(): boolean {
   return process.env.NODE_ENV === "production";
 }
@@ -20,7 +41,7 @@ export function publicApiBaseUrl(): string {
       "[DuraPet] Üretimde NEXT_PUBLIC_API_BASE_URL zorunlu (örn. https://api.alanadin.com)."
     );
   }
-  const url = sonSlashKaldir(raw);
+  const url = apiKokuNormalize(raw);
   const lower = url.toLowerCase();
   if (prodMu() && (lower.includes("localhost") || lower.includes("127.0.0.1"))) {
     throw new Error(
