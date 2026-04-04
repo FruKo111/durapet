@@ -15,6 +15,17 @@ BUNLAR KOD HATASI DEGIL — Hostinger on sunucu (LiteSpeed/Apache) ile Node aras
 - Giris sonrasi 404: ya API hala HTML donuyor (yanlis API URL / eski bundle), ya da yonlendirme /sahip'e giderken yine on sunucu 404'u (Hostinger sayfasi) donuyor.
 Yani: deploy geciyor diye "sunucu tarafi tamam" sonucu cikmaz; runtime yonlendirme ayri kontrol.
 
+ILK YENILEMEDE CSS YOK, BIR YERE YAZIP ENTER DEYINCE DUZELIYOR — NEDEN?
+- Ilk tam sayfa yuklemesinde tarayici HTML'i alir; CSS/JS ayri isteklerle `/_next/static/...` adreslerinden gelir.
+- Bu istekler 404 olunca sayfa "sadece metin" gorunur.
+- Sonra bir etkilesim (Enter, focus, client-side navigasyon) bazen farkli chunk'lari disk onbelleginden veya baska bir istekle yukler; kismen stilli gorunum olabilir — bu tutarli bir cozum degil, altyapi hatasinin belirtisi.
+- Kalici cozum: tum `/_next/*` (ve panel rotalari) Node'a proxy; www/apex tek kanonik adres.
+
+GIRIS: TOKEN 200, profilim 404 — AYNI MI?
+- Hayir. `token?grant_type=password` (Ag'da gorunen) Supabase'e gider (`NEXT_PUBLIC_SUPABASE_URL`); bu yuzden 200 alinabilir.
+- `profilim` ise DuraPet REST API'ye gider: tam adres `NEXT_PUBLIC_API_BASE_URL` + `/api/v1/profilim` olmali, ornek `https://durapet.site/api/v1/profilim`.
+- Ag'da `https://durapet.com.tr/api/v1/profilim` goruyorsan: istek panele gidiyor; panelde bu route yok -> 404 + HTML. Cozum: hPanel ortaminda `NEXT_PUBLIC_API_BASE_URL=https://durapet.site`, sonra paneli YENIDEN DERLE (Next bu degeri build sirasinda bundle'a gomer).
+
 SENIN YAPACAKLARIN (SIRAYLA)
 1) Safari / Chrome: Sayfada sag tik -> Incekle -> Ag (Network).
    - Sayfayi yenile.

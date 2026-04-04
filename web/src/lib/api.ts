@@ -38,7 +38,8 @@ async function apiIstek<T>(
   }
 
   if (!response.ok) {
-    const htmlMi = /^(\s*)(<!doctype|<html)/i.test(hamMetin);
+    const bas = hamMetin.trimStart();
+    const htmlMi = /^(<!doctype\b|<html\b)/i.test(bas);
     if (htmlMi) {
       throw new ApiError(
         "API JSON yerine HTML sayfasi dondu (genelde 404). NEXT_PUBLIC_API_BASE_URL panel adresi degil, REST API koku olmali (orn. https://durapet.site). Degeri Hostinger ortaminda duzeltip siteyi yeniden DERLEYIP dagitin.",
