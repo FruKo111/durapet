@@ -8,6 +8,13 @@ GORDUGUN SEMPTOMLAR
 
 BUNLAR KOD HATASI DEGIL — Hostinger on sunucu (LiteSpeed/Apache) ile Node arasindaki yonlendirme eksik veya yanlis.
 
+"DAGITIM TAMAMLANDI" NE DEMEK?
+- Hostinger'da yesil tik = genelde: repo cekildi, build komutu (bizde hostinger-build.js + next build) 0 koduyla bitti, paket kopyalandi.
+- Bu, tarayicinin actigi HER istegin (ozellikle /_next/static/*.css ve /sahip gibi yollar) %100 Node'a ulastigi anlamina gelmez.
+- HTML iskeleti bazen gelir (bir istek Node'a carpiyor), CSS/JS baska isteklerle gelir; onlar 404 olunca sayfa "css'siz" gorunur.
+- Giris sonrasi 404: ya API hala HTML donuyor (yanlis API URL / eski bundle), ya da yonlendirme /sahip'e giderken yine on sunucu 404'u (Hostinger sayfasi) donuyor.
+Yani: deploy geciyor diye "sunucu tarafi tamam" sonucu cikmaz; runtime yonlendirme ayri kontrol.
+
 SENIN YAPACAKLARIN (SIRAYLA)
 1) Safari / Chrome: Sayfada sag tik -> Incekle -> Ag (Network).
    - Sayfayi yenile.
