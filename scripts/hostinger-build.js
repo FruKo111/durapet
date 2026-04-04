@@ -68,11 +68,19 @@ function webNodeSurumKontrol() {
 }
 
 function webBagimlilikKur(webDir) {
+  const env = { ...process.env };
   try {
-    execSync("npm ci", { cwd: webDir, stdio: "inherit", env: process.env });
+    execSync("npm ci", { cwd: webDir, stdio: "inherit", env });
   } catch {
     console.warn("[hostinger-build] npm ci basarisiz; npm install deneniyor...");
-    execSync("npm install", { cwd: webDir, stdio: "inherit", env: process.env });
+    try {
+      execSync("npm install", { cwd: webDir, stdio: "inherit", env });
+    } catch {
+      console.warn(
+        "[hostinger-build] npm install basarisiz; ERESOLVE icin --legacy-peer-deps deneniyor..."
+      );
+      execSync("npm install --legacy-peer-deps", { cwd: webDir, stdio: "inherit", env });
+    }
   }
 }
 
