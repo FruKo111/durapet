@@ -1,0 +1,46 @@
+DuraPet — durapet.com.tr (Next.js) CSS yok / 404 / 403
+=====================================================
+
+GORDUGUN SEMPTOMLAR
+- Sayfa metin olarak geliyor, stil yok  -> Tarayici `/_next/static/...css` dosyasini ya alamiyor (404) ya da HTML donuyor.
+- `/sahip` vb. acilinca Hostinger kaykayli 404  -> Istek Node (next start)'a gitmiyor.
+- `www` 403, apex 404  -> www ile apex farkli sanal host / farkli klasor.
+
+BUNLAR KOD HATASI DEGIL — Hostinger on sunucu (LiteSpeed/Apache) ile Node arasindaki yonlendirme eksik veya yanlis.
+
+SENIN YAPACAKLARIN (SIRAYLA)
+1) Safari / Chrome: Sayfada sag tik -> Incekle -> Ag (Network).
+   - Sayfayi yenile.
+   - Tip: CSS veya "JS" filtrele.
+   - Kirmizi olan `/_next/static/...` satirina tikla -> Status (404 mu? blocked mi?).
+
+2) Adres tutarliligi
+   - Tek bir kanonik adres sec: ya hep `https://durapet.com.tr` ya hep `https://www.durapet.com.tr`.
+   - Digerini hPanel "Yonlendirme" ile 301 yap.
+   - Panel + API CORS'ta kullandigin origin ile ayni olsun.
+
+3) hPanel -> dosyalar -> ilgili domain `public_html` (veya Hostinger'in Node icin gosterdigi kok).
+   - `.htaccess` var mi bak. Node uygulamasi genelde burada "proxy" kurallari ister.
+   - PORT numarasi siteye ozel; Hostinger dokuman / destek ile dogrula.
+   - ORNEK (PORT'u kendi Node portunla degistir — kopyala-yapistirma once destek onayi):
+
+   <IfModule mod_rewrite.c>
+   RewriteEngine On
+   RewriteCond %{REQUEST_FILENAME} !-f
+   RewriteCond %{REQUEST_FILENAME} !-d
+   RewriteRule ^(.*)$ http://127.0.0.1:BU_PORTU_DEGISTIR/$1 [P,L]
+   </IfModule>
+
+   Not: `mod_proxy` acik olmali; paylasimli hostingte bazen sadece Hostinger otomatik yazar.
+
+4) LiteSpeed / Cache aciksa: site icin "Purge" / onbellek temizle.
+
+5) Destek mesaji (kopyala):
+   "Next.js `next start` kullaniyorum. `/_next/static/` ve `/giris`, `/sahip` istekleri ya 404 ya da HTML; CSS yuklenmiyor. Apex ve www ayni Node uygulamasina bagli degil gibi. Tum path'lerin (ozellikle `/_next/*`) Node'a proxy edilmesi ve www+apex'in ayni siteye baglanmasi gerekiyor."
+
+GERCEKCI ALTERNATIF
+- Paneli Vercel / Netlify (ucretsiz katman) uzerinde barindirmak cogu zaman 5 dk surer; API `durapet.site` olarak kalir.
+- `NEXT_PUBLIC_API_BASE_URL=https://durapet.site` + CORS'a panel origin ekle.
+
+TEKNIK NOT (neden statik export yapmadik)
+- `/kimlik/[kimlikNo]` QR sayfasi dinamik; Next.js `output: 'export'` ile bu yapı uyumsuz (QR linkleri bozulur).
