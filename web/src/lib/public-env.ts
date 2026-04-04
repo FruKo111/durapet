@@ -30,6 +30,21 @@ export function publicApiBaseUrl(): string {
   if (prodMu() && !lower.startsWith("https://")) {
     console.warn("[DuraPet] Üretimde API için https:// önerilir:", url);
   }
+  if (typeof window !== "undefined" && prodMu()) {
+    try {
+      const apiOrigin = new URL(url).origin;
+      if (apiOrigin === window.location.origin) {
+        throw new Error(
+          "[DuraPet] NEXT_PUBLIC_API_BASE_URL panel ile aynı siteye işaret ediyor; tarayıcı /api isteklerini panele atıyor (404). Değer API kökü olmalı, örn. https://durapet.site — hPanel ortam değişkenini düzeltip siteyi yeniden DERLEYIN."
+        );
+      }
+    } catch (err) {
+      if (err instanceof Error && err.message.startsWith("[DuraPet]")) throw err;
+      throw new Error(
+        `[DuraPet] NEXT_PUBLIC_API_BASE_URL geçersiz veya eksik görünüyor: ${String(raw)}`
+      );
+    }
+  }
   return url;
 }
 
